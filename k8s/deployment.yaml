@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-worker
+spec:
+  replicas: 1  # KEDA will manage scaling
+  selector:
+    matchLabels:
+      app: keda-worker
+  template:
+    metadata:
+      labels:
+        app: keda-worker
+    spec:
+      containers:
+        - name: keda-worker
+          image: myregistry.azurecr.io/kedaworker:latest
+          env:
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: azure-queue-secret
+                  key: connectionString

@@ -1,0 +1,15 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: keda-worker-scale
+spec:
+  scaleTargetRef:
+    name: keda-worker
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: azure-queue
+      metadata:
+        queueName: "my-events"
+        queueLength: "5"  # Scale up if > 5 messages
+        connectionFromEnv: AZURE_STORAGE_CONNECTION_STRING
