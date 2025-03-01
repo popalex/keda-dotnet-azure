@@ -12,12 +12,12 @@ class Program
         var queueClient = new QueueClient(connectionString, queueName);
         await queueClient.CreateIfNotExistsAsync();
 
-        for (int i = 1; i <= 10; i++)
+        for (int i = 1; i <= 1000; i++)
         {
             string message = $"Event {i} at {DateTime.UtcNow}";
             await queueClient.SendMessageAsync(message);
             Console.WriteLine($"Sent: {message}");
-            await Task.Delay(1000);  // Simulate event generation delay
+            await Task.Delay(10);  // Simulate event generation delay
         }
     }
 }
