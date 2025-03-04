@@ -1,23 +1,31 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 
 class Program
 {
     static async Task Main()
     {
-        string connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
-        string queueName = "my-events";
+        string storageConnectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
+        string queueName = "image-processing-queue";
+        string containerName = "images";
 
-        var queueClient = new QueueClient(connectionString, queueName);
+        var queueClient = new QueueClient(storageConnectionString, queueName);
+        var blobClient = new BlobContainerClient(storageConnectionString, containerName);
+
         await queueClient.CreateIfNotExistsAsync();
+        await blobClient.CreateIfNotExistsAsync();
 
-        for (int i = 1; i <= 1000; i++)
-        {
-            string message = $"Event {i} at {DateTime.UtcNow}";
-            await queueClient.SendMessageAsync(message);
-            Console.WriteLine($"Sent: {message}");
-            await Task.Delay(10);  // Simulate event generation delay
-        }
+        string filePath = "sample.jpg";  // Local image file to upload
+        string blobName = Guid.NewGuid().ToString() + Path.GetExtension(filePath);
+        BlobClient blob = blobClient.GetBlobClient(blobName);
+
+        await blob.UploadAsync(filePath);
+        Console.WriteLine($"Uploaded: {blobName}");
+
+        await queueClient.SendMessageAsync(blobName);
+        Console.WriteLine($"Sent event: {blobName}");
     }
 }

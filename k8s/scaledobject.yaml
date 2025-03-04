@@ -10,6 +10,6 @@ spec:
   triggers:
     - type: azure-queue
       metadata:
-        queueName: "my-events"
-        queueLength: "5"  # Scale up if > 5 messages
+        queueName: "image-processing-queue"
+        queueLength: "5"
         connectionFromEnv: AZURE_STORAGE_CONNECTION_STRING

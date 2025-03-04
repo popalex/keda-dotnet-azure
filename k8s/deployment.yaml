@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: keda-worker
 spec:
-  replicas: 1  # KEDA will manage scaling
+  replicas: 1
   selector:
     matchLabels:
       app: keda-worker
@@ -19,5 +19,5 @@ spec:
             - name: AZURE_STORAGE_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
-                  name: azure-queue-secret
+                  name: azure-storage-secret
                   key: connectionString
