@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Build And Deploy
 
 on:
   workflow_dispatch:
@@ -25,7 +25,8 @@ jobs:
     - name: 'Build KedaWorker'
       run: |
         cd KedaWorker
-        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/kedaworker:${{ github.sha }}
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/kedaworker:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/kedaworker:latest .
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/kedaworker:${{ github.sha }}
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/kedaworker:latest
     - run: |
         docker images
