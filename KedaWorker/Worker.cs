@@ -50,25 +50,18 @@ public class Worker : BackgroundService
         var blobClient = _blobContainerClient.GetBlobClient(blobName);
         var outputClient = _blobContainerClient.GetBlobClient($"processed-{blobName}");
 
-        using (var inputStream = new MemoryStream())
+        using var inputStream = await blobClient.OpenReadAsync();
+        using var outputStream = new MemoryStream();
+
+        MagicImageProcessor.ProcessImage(inputStream, outputStream, new ProcessImageSettings
         {
-            await blobClient.DownloadToAsync(inputStream);
-            inputStream.Position = 0;
+            Width = 100,
+            Height = 100,
+            ResizeMode = CropScaleMode.Max
+        });
 
-            using (var outputStream = new MemoryStream())
-            {
-                MagicImageProcessor.ProcessImage(inputStream, outputStream, new ProcessImageSettings
-                {
-                    Width = 100,
-                    Height = 100,
-                    ResizeMode = CropScaleMode.Max
-                });
-
-                outputStream.Position = 0;
-                await outputClient.UploadAsync(outputStream);
-            }
-        }
-
-        _logger.LogInformation($"Processed & saved: processed-{blobName}");
+        outputStream.Position = 0;
+        await outputClient.UploadAsync(outputStream);
     }
+
 }
