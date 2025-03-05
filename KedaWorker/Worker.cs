@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +6,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PhotoSauce.MagicScaler;
 
 public class Worker : BackgroundService
 {
@@ -50,18 +50,22 @@ public class Worker : BackgroundService
         var blobClient = _blobContainerClient.GetBlobClient(blobName);
         var outputClient = _blobContainerClient.GetBlobClient($"processed-{blobName}");
 
-        using (var stream = new MemoryStream())
+        using (var inputStream = new MemoryStream())
         {
-            await blobClient.DownloadToAsync(stream);
-            stream.Position = 0;
+            await blobClient.DownloadToAsync(inputStream);
+            inputStream.Position = 0;
 
-            using (var image = Image.FromStream(stream))
-            using (var resized = new Bitmap(image, new Size(100, 100)))
-            using (var output = new MemoryStream())
+            using (var outputStream = new MemoryStream())
             {
-                resized.Save(output, System.Drawing.Imaging.ImageFormat.Jpeg);
-                output.Position = 0;
-                await outputClient.UploadAsync(output);
+                MagicImageProcessor.ProcessImage(inputStream, outputStream, new ProcessImageSettings
+                {
+                    Width = 100,
+                    Height = 100,
+                    ResizeMode = CropScaleMode.Max
+                });
+
+                outputStream.Position = 0;
+                await outputClient.UploadAsync(outputStream);
             }
         }
 
