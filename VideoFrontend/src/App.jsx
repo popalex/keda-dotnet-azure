@@ -8,7 +8,7 @@ function App() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">🎬 Video Platform</h1>
+      <h1 className="text-3xl font-bold text-center mb-6 animate-fade-in">🎬 Video Platform</h1>
       <VideoUpload onUpload={() => setRefresh(!refresh)} />
       <VideoList key={refresh} />
     </div>

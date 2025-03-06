@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ReactPlayer from "react-player";
+import config from "../config";
+
+const API_BASE_URL = config.API_BASE_URL;
 
 const VideoList = () => {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/videos")
+    axios.get(`${API_BASE_URL}/api/videos`)
       .then((res) => setVideos(res.data))
       .catch((err) => console.error("Error fetching videos", err));
   }, []);

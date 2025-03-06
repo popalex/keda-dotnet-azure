@@ -50,3 +50,19 @@ dotnet run
 ```bash
 kubectl get pods -w
 ```
+
+# Video Backend
+
+To run the backend in dev mode - with swagger:
+
+```bash
+ASPNETCORE_ENVIRONMENT=Development dotnet run --urls=http://localhost:5000/
+```
+
+# Video FrontEnd
+
+Update the backend base url in `.env` file from `VideoFrontend` folder, and then run:
+
+```bash
+npm run dev
+```
